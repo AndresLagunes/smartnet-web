@@ -1,8 +1,8 @@
 {
-  "name": "smartnet-web-front",
+  "name": "smart-web-front",
   "version": "0.0.1",
   "description": "A Quasar Project",
-  "productName": "SmartNet Web",
+  "productName": "Smart Web",
   "author": "Andrés Lagunes <lagunes.andres@hotmail.com>",
   "private": true,
   "scripts": {

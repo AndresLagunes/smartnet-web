@@ -1,12 +1,12 @@
 <template>
   <q-dialog :model-value="isVisible" persistent>
-    <q-card>
+    <q-card style="width: 40%;">
       <q-card-section>
         <div class="row items-center">
           <div class="col">Agregar Usuario</div>
           <br />
           <div class="col-auto">
-            <q-icon name="close" @click="close" />
+            <q-btn icon="close" color="black" flat @click="close('nothing')" />
           </div>
         </div>
       </q-card-section>
@@ -53,7 +53,10 @@
             options-dense
           />
 
-          <q-btn type="submit" label="Save" color="primary" />
+          <div class="q-pt-lg">
+            <q-btn class="btn" icon="save" style="margin-right: 4%;"  type="submit" label="Guardar" color="primary" />
+            <q-btn class="btn" icon="close" color="negative" @click="close('nothing')">Cancelar</q-btn>
+          </div>
         </q-form>
       </q-card-section>
     </q-card>
@@ -61,7 +64,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, defineEmits } from "vue";
+import { onMounted, ref } from "vue";
 import axios from "axios";
 import { useQuasar } from "quasar";
 
@@ -87,11 +90,22 @@ const userData = ref({
   password: "",
 });
 
-const close = () => {
-  emits("emitter", {
-    caller: "userAdd",
-    isVisible: props.isVisible,
-  });
+const close = (did) => {
+  switch (did) {
+    case 'nothing':
+      emits("emitter", {
+        caller: "userAddNothing",
+        isVisible: props.isVisible,
+      });
+      break;
+  
+    default:
+      emits("emitter", {
+        caller: "userAdd",
+        isVisible: props.isVisible,
+      });
+      break;
+  }
 };
 
 const save = async () => {
@@ -100,7 +114,7 @@ const save = async () => {
   if (samePass) {
     try {
       await axios
-        .post("http://localhost:3000/security/users/createUser", userData)
+        .post("http://localhost:3000/security/users/createUser", userData.value)
         .then((response) => {
           if (response.data.success) {
             $q.notify({
@@ -113,6 +127,25 @@ const save = async () => {
               //   { label: 'Reply', color: 'yellow', handler: () => { /* ... */ } }
               // ]
             });
+            userData.value = {
+              username: "",
+              applicationId: "",
+              statusId: "",
+              password: "",
+            }
+            close();
+          } else {
+            $q.notify({
+              progress: true,
+              message: "Hubo un error al registrar al usuario",
+              color: "negative",
+              multiLine: false,
+              // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
+              // actions: [
+              //   { label: 'Reply', color: 'yellow', handler: () => { /* ... */ } }
+              // ]
+            });
+            close('nothing');
           }
         })
         .catch((error) => {
@@ -122,7 +155,7 @@ const save = async () => {
       console.log(error);
       $q.notify({
         progress: true,
-        message: "Error al registrar al usuario",
+        message: "Hubo un error al registrar al usuario",
         color: "negative",
         multiLine: false,
         // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
@@ -147,43 +180,11 @@ const save = async () => {
   }
 };
 
-const fetchData = async () => {
-  try {
-    // Make an API request or fetch data here
-    await axios
-      .get("http://localhost:3000/security/statuses/getAllStatuses")
-      .then((response) => {
-        console.log(response.data);
-        if (response.data.success) {
-          statuses.value = response.data.statuses;
-          console.log(statuses.value);
-        } else {
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    await axios
-      .get("http://localhost:3000/security/applications/getAllApplications")
-      .then((response) => {
-        console.log(response.data);
-        if (response.data.success) {
-          applications.value = response.data.applications;
-          console.log(applications.value);
-        } else {
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
-onMounted(() => {
-  fetchData();
-});
+defineExpose({statuses, applications});
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.btn {
+  width: 48%;
+}
+</style>

@@ -78,6 +78,17 @@ const login = async (e) => {
       // localStorage.setItem('token', response.data.token);
       userStore.setUser(response.data.user); // set user info using Pinia
       router.push("/home"); // if you use Router, navigate to main page
+    } else {
+      $q.notify({
+        progress: true,
+        message: response.data.error,
+        color: "negative",
+        multiLine: false,
+        // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
+        // actions: [
+        //   { label: 'Reply', color: 'yellow', handler: () => { /* ... */ } }
+        // ]
+      });
     }
   } catch (error) {
     console.error("An error occurred during login:", error);
