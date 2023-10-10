@@ -31,6 +31,17 @@
             dense
           />
           <q-select
+            v-model="userData.roleId"
+            :options="roles"
+            :option-value="'id'"
+            :option-label="'roleName'"
+            label="Rol"
+            emit-value
+            dense
+            map-options
+            options-dense
+          />
+          <q-select
             v-model="userData.applicationId"
             :options="applications"
             :option-value="'id'"
@@ -74,6 +85,7 @@ const emits = defineEmits(["emitter"]);
 
 const statuses = ref([]);
 const applications = ref([]);
+const roles = ref([]);
 const passwordConfirmInput = ref("");
 
 const props = defineProps({
@@ -86,6 +98,7 @@ const props = defineProps({
 const userData = ref({
   username: "",
   applicationId: "",
+  roleId: "",
   statusId: "",
   password: "",
 });
@@ -110,7 +123,7 @@ const close = (did) => {
 
 const save = async () => {
   let samePass = userData.value.password == passwordConfirmInput.value;
-  console.log(userData.value);
+  // console.log(userData.value);
   if (samePass) {
     try {
       await axios
@@ -132,7 +145,9 @@ const save = async () => {
               applicationId: "",
               statusId: "",
               password: "",
-            }
+            };
+            passwordConfirmInput.value = "";
+
             close();
           } else {
             $q.notify({
@@ -180,7 +195,7 @@ const save = async () => {
   }
 };
 
-defineExpose({statuses, applications});
+defineExpose({statuses, applications, roles});
 </script>
 
 <style lang="scss">

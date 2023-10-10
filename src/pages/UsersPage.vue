@@ -74,6 +74,7 @@ const editUserRef = ref(null);
 const deleteUserRef = ref(null);
 const statuses = ref([]);
 const applications = ref([]);
+const roles = ref([]);
 const filter = ref("");
 const usersData = ref([]);
 const usersColumns = ref([
@@ -83,7 +84,7 @@ const usersColumns = ref([
     label: "ID",
     align: "left",
     field: (row) => row.id,
-    format: (val) => `${val}`,
+    format: (val) => `${val}`, // "Format sirve para cambiar el cómo se ve un campo directamente"
     sortable: true,
   },
   {
@@ -94,10 +95,14 @@ const usersColumns = ref([
     sortable: true,
   },
   {
+    name: "role",
+    label: "Rol de Usuario",
+    field: (row) => row.userRole.role.roleName,
+  },
+  {
     name: "application",
     label: "Aplicación",
     field: (row) => row.application.applicationName,
-    sortable: true,
   },
   {
     name: "status",
@@ -153,6 +158,22 @@ const fetchData = async () => {
           editUserRef.value.applications = response.data.applications;
           addUserRef.value.applications = response.data.applications;
           // console.log(applications.value);
+        } else {
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    await axios
+      .get("http://localhost:3000/security/roles/getAllRoles")
+      .then((response) => {
+        // console.log(response.data);
+        if (response.data.success) {
+          roles.value = response.data.roles;
+          editUserRef.value.roles = response.data.roles;
+          addUserRef.value.roles = response.data.roles;
+          // console.log(roles.value);
         } else {
         }
       })

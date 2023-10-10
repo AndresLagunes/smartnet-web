@@ -138,7 +138,8 @@ const deleteUser = async () => {
 };
 
 const setupUser = (user) => {
-  userData.value = user;
+  // Create a deep copy of the user object
+  userData.value = JSON.parse(JSON.stringify(user));
 };
 defineExpose({ setupUser });
 </script>

@@ -87,10 +87,10 @@ const rolesColumns = ref([
     sortable: true,
   },
   {
-    name: "rolename",
+    name: "roleName",
     align: "center",
     label: "Nombre del Rol",
-    field: (row) => row.rolename,
+    field: (row) => row.roleName,
     sortable: true,
   },
   {

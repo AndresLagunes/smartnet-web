@@ -5,7 +5,7 @@
         <div class="row items-center">
           <div class="col">
             <q-avatar icon="delete" color="warning" text-color="white" />
-            <span class="q-ml-md title-text">Eliminar Usuario</span>
+            <span class="q-ml-md title-text">Eliminar Rol</span>
           </div>
           <br />
           <div class="col-auto">
@@ -18,15 +18,15 @@
         <div class="row items-center">
           <div class="col">
             <span class="q-ml-sm">
-              Está seguro que desea eleminar al usuario:
+              Está seguro que desea eleminar el Rol:
             </span>
           </div>
         </div>
         <br />
         <div class="row items-center"> 
           <div class="col">
-            <span class="user">
-              {{ userData.username }}
+            <span class="role">
+              {{ roleData.rolName }}
             </span>
           </div>
         </div>
@@ -34,7 +34,7 @@
 
       <q-card-section>
         <div class="">
-          <q-btn class="btn" icon="delete" color="negative" style="margin-right: 4%;" @click="deleteUser(props.row)">Eliminar</q-btn>
+          <q-btn class="btn" icon="delete" color="negative" style="margin-right: 4%;" @click="deleteRole(props.row)">Eliminar</q-btn>
           <q-btn class="btn" icon="close" color="primary" @click="close('nothing')">Cancelar</q-btn>
         </div>
       </q-card-section>
@@ -58,39 +58,39 @@ const props = defineProps({
   },
 });
 
-const userData = ref({
+const roleData = ref({
   id: "",
-  username: "",
+  roleName: "",
 });
 
 const close = (did) => {
   switch (did) {
     case 'nothing':
       emits("emitter", {
-        caller: "userDeleteNothing",
+        caller: "roleDeleteNothing",
         isVisible: props.isVisible,
       });
       break;
   
     default:
       emits("emitter", {
-        caller: "userDelete",
+        caller: "roleDelete",
         isVisible: props.isVisible,
       });
       break;
   }
 };
 
-const deleteUser = async () => {
-  console.log(userData.value);
+const deleteRole = async () => {
+  console.log(roleData.value);
   try {
     await axios
-      .post("http://localhost:3000/security/users/deleteUser", userData.value)
+      .post("http://localhost:3000/security/roles/deleteRole", roleData.value)
       .then((response) => {
         if (response.data.success) {
           $q.notify({
             progress: true,
-            message: "Usuario eliminado con éxito",
+            message: "Rol eliminado con éxito",
             color: "primary",
             multiLine: false,
             // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
@@ -98,15 +98,15 @@ const deleteUser = async () => {
             //   { label: 'Reply', color: 'yellow', handler: () => { /* ... */ } }
             // ]
           });
-          userData.value = {
+          roleData.value = {
             id: "",
-            username: "",
+            roleName: "",
           }
           close();
         } else {
             $q.notify({
               progress: true,
-              message: "Hubo un error al eliminar al usuario",
+              message: "Hubo un error al eliminar el rol",
               color: "negative",
               multiLine: false,
               // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
@@ -124,7 +124,7 @@ const deleteUser = async () => {
     console.log(error);
     $q.notify({
       progress: true,
-      message: "Hubo un error al eliminar al usuario",
+      message: "Hubo un error al eliminar el rol",
       color: "negative",
       multiLine: false,
       // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
@@ -137,10 +137,11 @@ const deleteUser = async () => {
   close(); // Close the dialog
 };
 
-const setupUser = (user) => {
-  userData.value = user;
+const setupRole = (role) => {
+  // Create a deep copy of the role object
+  roleData.value = JSON.parse(JSON.stringify(role));
 };
-defineExpose({ setupUser });
+defineExpose({ setupRole });
 </script>
 
 <style lang="scss">
@@ -152,7 +153,7 @@ defineExpose({ setupUser });
   width: 48%;
 }
 
-.user {
+.role {
   font-weight: bold;
   font-size: 20px;
   text-align: center;

@@ -3,7 +3,7 @@
     <q-card style="width: 40%;">
       <q-card-section>
         <div class="row items-center">
-          <div class="col">Editar Usuario</div>
+          <div class="col">Editar Rol</div>
           <br />
           <div class="col-auto">
             <q-btn icon="close" color="black" flat @click="close('nothing')" />
@@ -14,12 +14,17 @@
         <q-form @submit="save">
           <!-- Form fields go here -->
           <q-input 
-            v-model="userData.username"
-            label="Nombre de Usuario" 
+            v-model="roleData.roleName"
+            label="Nombre de Rol" 
+            dense 
+          />
+          <q-input 
+            v-model="roleData.description"
+            label="Descripción del Rol" 
             dense 
           />
           <q-select
-            v-model="userData.applicationId"
+            v-model="roleData.applicationId"
             :options="applications"
             :option-value="'id'"
             :option-label="'applicationName'"
@@ -30,7 +35,7 @@
             options-dense
           />
           <q-select
-            v-model="userData.statusId"
+            v-model="roleData.statusId"
             :options="statuses"
             :option-value="'id'"
             :option-label="'statusName'"
@@ -71,9 +76,10 @@ const props = defineProps({
   },
 });
 
-const userData = ref({
+const roleData = ref({
   id: "",
-  username: "",
+  roleName: "",
+  description: "",
   applicationId: "",
   statusId: "",
 });
@@ -82,14 +88,14 @@ const close = (did) => {
   switch (did) {
     case 'nothing':
       emits("emitter", {
-        caller: "userEditNothing",
+        caller: "roleEditNothing",
         isVisible: props.isVisible,
       });
       break;
   
     default:
       emits("emitter", {
-        caller: "userEdit",
+        caller: "roleEdit",
         isVisible: props.isVisible,
       });
       break;
@@ -97,15 +103,15 @@ const close = (did) => {
 };
 
 const save = async () => {
-  console.log(userData.value);
+  console.log(roleData.value);
   try {
       await axios
-        .post("http://localhost:3000/security/users/editUser", userData.value)
+        .post("http://localhost:3000/security/roles/editRole", roleData.value)
         .then((response) => {
           if (response.data.success) {
             $q.notify({
               progress: true,
-              message: "Usuario modificado con éxito",
+              message: "Rol modificado con éxito",
               color: "primary",
               multiLine: false,
               // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
@@ -113,17 +119,18 @@ const save = async () => {
               //   { label: 'Reply', color: 'yellow', handler: () => { /* ... */ } }
               // ]
             });
-            userData.value = {
-              username: "",
+            roleData.value = {
+              id: "",
+              roleName: "",
+              description: "",
               applicationId: "",
               statusId: "",
-              password: "",
             }
             close();
           } else {
             $q.notify({
               progress: true,
-              message: "Hubo un error al modificar al usuario",
+              message: "Hubo un error al modificar el rol",
               color: "negative",
               multiLine: false,
               // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
@@ -141,7 +148,7 @@ const save = async () => {
       console.log(error);
       $q.notify({
         progress: true,
-        message: "Hubo un error al modificar al usuario",
+        message: "Hubo un error al modificar el rol",
         color: "negative",
         multiLine: false,
         // avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
@@ -154,11 +161,12 @@ const save = async () => {
     close(); // Close the dialog
 };
 
-const setupUser = (user) => {
-  userData.value = user;
+const setupRole = (role) => {
+  // Create a deep copy of the role object
+  roleData.value = JSON.parse(JSON.stringify(role));
 }
 
-defineExpose({statuses, applications, setupUser});
+defineExpose({statuses, applications, setupRole});
 </script>
 
 <style lang="scss">
